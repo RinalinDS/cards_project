@@ -1,14 +1,10 @@
 import React, { ChangeEvent } from 'react'
+
 import { Button } from 'components/common/button/Button'
 import s from 'components/common/Pagination/styles/Paginator.module.scss'
 import { EHelpers } from 'enums'
 import { useAppDispatch } from 'hooks'
-import {
-  setAmountOfElementsToShow,
-  setCurrentPage,
-  setPortionNumber,
-} from 'store/reducers'
-
+import { setAmountOfElementsToShow, setCurrentPage, setPortionNumber } from 'store/reducers'
 
 type propsType = {
   currentPage: number
@@ -17,7 +13,6 @@ type propsType = {
   itemName: string
   portionSizeForPages: number
   portionNumber: number
-  onPageChangeHandle: (value: number) => void
 }
 
 const options = [EHelpers.Two, EHelpers.Five, EHelpers.Ten]
@@ -29,7 +24,6 @@ export const Paginator: React.FC<propsType> = ({
   itemName,
   portionSizeForPages,
   portionNumber,
-  onPageChangeHandle,
 }) => {
   const pagesAmount = Math.ceil(totalItemsCount / amountOfElementsToShow)
   const leftSideBorder = (portionNumber - EHelpers.One) * portionSizeForPages + EHelpers.One
@@ -47,7 +41,6 @@ export const Paginator: React.FC<propsType> = ({
   }
 
   const handlePageChange = (value: number): void => {
-    onPageChangeHandle(value)
     appDispatch(setCurrentPage(value))
   }
 

@@ -42,6 +42,18 @@ export const TablePage: FC = () => {
   useEffect(() => {
     appDispatch(getPacksS({ packName: searchPack, min: localMinRage, max: localMaxRage }))
   }, [localMinRage, localMaxRage, searchPack])
+  useEffect(() => {
+    const obj = sortTitle
+      ? {
+          sortPacks: `${Number(!oneZero)}${sortTitle}`,
+          page: currentPage,
+          packName: searchPack,
+          min: localMinRage,
+          max: localMaxRage,
+        }
+      : { page: currentPage, packName: searchPack, min: localMinRage, max: localMaxRage }
+    appDispatch(getPacksS(obj))
+  }, [currentPage])
 
   const onChangeCheckbox = (e: ChangeEvent<HTMLInputElement>): void => {
     setCheckboxValue(Boolean(e.target.value))
@@ -86,18 +98,7 @@ export const TablePage: FC = () => {
       setSortTitle(sortName)
     }
   }
-  const handlePageChange = (value: number): void => {
-    const obj = sortTitle
-      ? {
-          sortPacks: `${Number(!oneZero)}${sortTitle}`,
-          page: value,
-          packName: searchPack,
-          min: localMinRage,
-          max: localMaxRage,
-        }
-      : { page: value, packName: searchPack, min: localMinRage, max: localMaxRage }
-    appDispatch(getPacksS(obj))
-  }
+
   const sortByName = (): void => {
     sortByParam('name')
   }
@@ -139,20 +140,6 @@ export const TablePage: FC = () => {
     appDispatch(setMinMaxCardInPacks(value))
   }, [])
 
-  const updatePack = (): void => {
-    const payload: AddPackT = {
-      cardsPack: {
-        _id: '',
-        name: addPackValue,
-        deckCover: '',
-        private: checkboxValue,
-      },
-    }
-    appDispatch(addPackS(payload))
-    setAddPackValue('')
-    setCheckboxValue(false)
-    setModalOpen(false)
-  }
   const currentPackRef = useRef('')
   const [editPackValue, setEditPackValue] = useState('')
   const onEditPackChangeValue = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -201,6 +188,20 @@ export const TablePage: FC = () => {
     appDispatch(updatePackS(payload))
     setEditModalOpen(false)
   }
+  const updatePack = (): void => {
+    const payload: AddPackT = {
+      cardsPack: {
+        _id: '',
+        name: addPackValue,
+        deckCover: '',
+        private: checkboxValue,
+      },
+    }
+    appDispatch(addPackS(payload))
+    setAddPackValue('')
+    setCheckboxValue(false)
+    setModalOpen(false)
+  }
   return (
     <div className={s.table}>
       {location.pathname === Paths.Profile ? (
@@ -223,6 +224,7 @@ export const TablePage: FC = () => {
             control={<Checkbox value={checkboxValue} onChange={onChangeCheckbox} />}
             label="private?"
           />
+          <Button onClick={addNewPack}>Add</Button>
         </ModalButton>
         <DebounceSearchInput placeholder="Search..." searchValue={searchByPacks} />
       </div>
@@ -240,7 +242,6 @@ export const TablePage: FC = () => {
         amountOfElementsToShow={amountOfElementsToShow}
         portionSizeForPages={portionSizeForPages}
         portionNumber={portionNumber}
-        onPageChangeHandle={handlePageChange}
       />
       <Modal
         handleOpen={() => {

@@ -1,6 +1,6 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit'
-import {CardT, PackT} from 'types'
-import {UpdatedGradeT} from '../../types/PackTypes';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+
+import { CardT, PackT } from 'types'
 
 const initialState = {
   currentPackId: '',
@@ -25,11 +25,15 @@ const slice = createSlice({
     setCurrentPackId: (state, action: PayloadAction<string>) => {
       state.currentPackId = action.payload
     },
-    setCardUpdatedGrade: (state, action: PayloadAction<UpdatedGradeT>) => {
-      const {cards} = state.currentPack
-      // eslint-disable-next-line no-underscore-dangle
-      const index = cards.findIndex(s => s._id === action.payload.card_id)
-      cards[index] = {...cards[index], grade: action.payload.grade}
+    setCardUpdatedGrade: (state, action: PayloadAction<any>) => {
+      const index = state.currentPack.cards.findIndex(
+        // eslint-disable-next-line no-underscore-dangle
+        s => s._id === action.payload.updatedGrade.card_id,
+      )
+      state.currentPack.cards[index] = {
+        ...state.currentPack.cards[index],
+        grade: action.payload.updatedGrade.grade,
+      }
     },
   },
 })
@@ -37,8 +41,4 @@ const slice = createSlice({
 export const cardsReducer = slice.reducer
 
 // ACTION CREATORS
-export const {
-  setOnePackCards,
-  setCurrentPackId,
-  setCardUpdatedGrade
-} = slice.actions
+export const { setOnePackCards, setCurrentPackId, setCardUpdatedGrade } = slice.actions
