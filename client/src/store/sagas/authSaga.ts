@@ -1,15 +1,18 @@
 import { AxiosError, AxiosResponse } from 'axios'
-import { call, put, takeEvery } from 'redux-saga/effects'
+import { SagaIterator } from 'redux-saga'
+import { call, put, StrictEffect, takeEvery } from 'redux-saga/effects'
 
 import { userApi } from 'api/userApi'
 import { AppStatus, AuthTypeSaga } from 'enums'
 import { setAppStatus, setError, setIsLoggedInAC, setUserInfo } from 'store/reducers'
-import { UserType } from 'types'
+import { LoginValues, UserType } from 'types'
 
-function* loginWorker(data: any) {
+function* loginWorker({
+  payload,
+}: loginType): Generator<StrictEffect, void, AxiosResponse<UserType>> {
   try {
     yield put(setAppStatus(AppStatus.loading))
-    const res: AxiosResponse<UserType> = yield call(userApi.login, data.values)
+    const res: AxiosResponse<UserType> = yield call(userApi.login, payload)
     yield put(setUserInfo(res.data))
     yield put(setIsLoggedInAC(true))
   } catch (e) {
@@ -19,11 +22,7 @@ function* loginWorker(data: any) {
   }
 }
 
-export function* loginWatcher() {
-  yield takeEvery(AuthTypeSaga.LoginSaga, loginWorker)
-}
-
-function* logOutWorker() {
+function* logOutWorker(): Generator<StrictEffect, void, void> {
   try {
     yield put(setAppStatus(AppStatus.loading))
     yield call(userApi.logOut)
@@ -35,7 +34,13 @@ function* logOutWorker() {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function* logOutWatcher() {
+export const login = (payload: LoginValues) => ({ type: AuthTypeSaga.LoginSaga, payload } as const)
+
+export const logout = () => ({ type: AuthTypeSaga.LogOutSaga } as const)
+
+type loginType = ReturnType<typeof login>
+
+export function* authWatcher(): SagaIterator {
   yield takeEvery(AuthTypeSaga.LogOutSaga, logOutWorker)
+  yield takeEvery(AuthTypeSaga.LoginSaga, loginWorker)
 }

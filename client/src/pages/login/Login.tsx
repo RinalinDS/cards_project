@@ -3,15 +3,16 @@ import React, { useEffect, useState } from 'react'
 import { useFormik } from 'formik'
 import { NavLink, useNavigate } from 'react-router-dom'
 
+import { login } from '../../store/sagas/authSaga'
+
 import Security from 'assets/icons/security.svg'
 import unSecurity from 'assets/icons/unSecurity.svg'
 import { Input } from 'components'
 import { Button } from 'components/common'
 import { Paths } from 'enums'
-import { AuthTypeSaga } from 'enums/AuthTypeSaga'
 import { useAppDispatch, useAppSelector } from 'hooks'
 import styles from 'styles/Auth/Auth.module.scss'
-import { LoginValues } from 'types'
+import { LoginParamsType } from 'types'
 import { validatePassAndEmail } from 'utils/validatePassAndEmail'
 
 export const Login: React.FC = () => {
@@ -29,8 +30,8 @@ export const Login: React.FC = () => {
       password: 'qwerty123',
       rememberMe: false,
     },
-    onSubmit: (values: LoginValues) => {
-      dispatch({ type: AuthTypeSaga.LoginSaga, values })
+    onSubmit: (values: LoginParamsType) => {
+      dispatch(login(values))
       setIsSecurity(false)
       formik.resetForm()
     },
