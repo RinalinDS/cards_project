@@ -38,7 +38,7 @@ const CardsTable: React.FC = () => {
       payload: { cardsPack_id: currentPackID, max: cardsTotalCount },
     })
   }, [cardsTotalCount])
-  const page = useAppSelector(state => state.cards.currentPage)
+  const page = useAppSelector(state => state.packs.currentPage)
   const handleReturnHomeClick = (): void => {
     dispatch(getPacksS({ page })) // TODO didn't work
     setSearchParams({})

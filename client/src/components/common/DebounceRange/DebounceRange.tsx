@@ -25,11 +25,11 @@ type DebounceViewRangePropsType = DefaultInputPropsType &
 
 export const DebounceRange: FC<DebounceViewRangePropsType> = memo(
   forwardRef(({ showQuantityPacks, ...restProps }, ref) => {
-    const allPackLength = useAppSelector(state => state.cards.cardPacksTotalCount)
-    const max = useAppSelector<number>(state => state.cards.rangeValues.maxCardsCount)
-    const min = useAppSelector<number>(state => state.cards.rangeValues.minCardsCount)
-    const localMinRage = useAppSelector<number>(state => state.cards.localMinRage)
-    const localMaxRage = useAppSelector<number>(state => state.cards.localMaxRage)
+    const allPackLength = useAppSelector(state => state.packs.cardPacksTotalCount)
+    const max = useAppSelector<number>(state => state.packs.rangeValues.maxCardsCount)
+    const min = useAppSelector<number>(state => state.packs.rangeValues.minCardsCount)
+    const localMinRage = useAppSelector<number>(state => state.packs.localMinRage)
+    const localMaxRage = useAppSelector<number>(state => state.packs.localMaxRage)
     const [values, setValues] = useState<[number, number]>([localMinRage, localMaxRage])
     const search = (value: [number, number]): void => {
       showQuantityPacks(value)

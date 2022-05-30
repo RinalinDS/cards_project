@@ -4,7 +4,6 @@ import { call, put, select, StrictEffect, takeLatest } from 'redux-saga/effects'
 
 import { RootState } from '../config'
 import { setCardUpdatedGrade } from '../reducers/cardsReducer'
-
 import { cardsApi } from 'api/cardsApi'
 import { SagaActions } from 'enums/sagaActions'
 import { setOnePackCards, setPacks } from 'store/reducers'
@@ -13,10 +12,9 @@ import { PackT } from 'types'
 import { CardsPackT, GetPacksPayload, GetPacksResponseT, GetPacksWorkerT } from 'types/PacksType'
 import { UpdatedGradeRequestT, UpdatedGradeT, CardTypePartial } from 'types/PackTypes'
 
-function* packsWorker({ payload }: GetPacksWorkerT): Generator<StrictEffect, void, CardsPackT[]> {
+function* packsWorker({ payload }: GetPacksWorkerT): Generator<StrictEffect, void, AxiosResponse<GetPacksResponseT>> {
   try {
-    // @ts-ignore
-    const response: AxiosResponse<GetPacksResponseT> = yield call(cardsApi.getPacks, payload)
+    const response = yield call(cardsApi.getPacks, payload)
     yield put(setPacks(response.data))
   } catch (e) {
     yield put(setError((e as AxiosError)?.response?.data.error))

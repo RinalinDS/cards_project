@@ -3,7 +3,8 @@
     width: 100vw;
     background-color: rgba(185, 166, 215, 0.4);
     position: fixed;
-    top:0px;
+    /*top:0px;*/
+    top:-100px;
     left: 0px;
     display: flex;
     align-items: center;

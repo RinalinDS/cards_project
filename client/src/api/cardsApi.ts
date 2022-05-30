@@ -4,7 +4,7 @@ import {CardT, CardTypePartial, UpdatedGradeRequestT, UpdatedGradeT} from '../ty
 
 import { instance } from './config'
 
-import { CardsPackT, GetPacksPayload } from 'types/PacksType'
+import {CardsPackT, GetPacksPayload, GetPacksResponseT} from 'types/PacksType'
 
 export const cardsApi = {
   setPack() {
@@ -17,10 +17,10 @@ export const cardsApi = {
     }
     const res = instance.post('cards/pack', data)
   },
-  getPacks: (payload: GetPacksPayload): Promise<AxiosResponse<CardsPackT[]>> => {
+  getPacks: (payload: GetPacksPayload): Promise<AxiosResponse> => {
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     const { packName, min, sortPacks, userId, max, pageCount = 10, page } = payload
-    return instance.get<CardsPackT[]>(`cards/pack`, {
+    return instance.get(`cards/pack`, {
       params: {
         packName,
         min,

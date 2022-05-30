@@ -1,5 +1,4 @@
 import React, { ChangeEvent } from 'react'
-
 import { Button } from 'components/common/button/Button'
 import s from 'components/common/Pagination/styles/Paginator.module.scss'
 import { EHelpers } from 'enums'
@@ -8,7 +7,7 @@ import {
   setAmountOfElementsToShow,
   setCurrentPage,
   setPortionNumber,
-} from 'store/reducers/cardsReducer'
+} from 'store/reducers'
 
 
 type propsType = {

@@ -10,7 +10,7 @@ import { EHelpers } from '../../../enums'
 import s from 'components/common/Pagination/styles/Paginator.module.scss'
 
 import { useAppDispatch, useAppSelector } from 'hooks'
-import { setAmountOfElementsToShow, setCurrentPage } from 'store/reducers/cardsReducer'
+import { setAmountOfElementsToShow, setCurrentPage } from 'store/reducers'
 
 type propsType = {
   currentPage?: number
@@ -22,9 +22,9 @@ type propsType = {
 const options = [EHelpers.Two, EHelpers.Five, EHelpers.Ten]
 
 export const PaginatorOUTDATED = () => {
-  const currentPage = useAppSelector<number>(state => state.cards.currentPage)
-  const totalItemsCount = useAppSelector<number>(state => state.cards.cardPacksTotalCount)
-  const amountOfElementsToShow = useAppSelector<number>(state => state.cards.amountOfElementsToShow)
+  const currentPage = useAppSelector<number>(state => state.packs.currentPage)
+  const totalItemsCount = useAppSelector<number>(state => state.packs.cardPacksTotalCount)
+  const amountOfElementsToShow = useAppSelector<number>(state => state.packs.amountOfElementsToShow)
   const pages = totalItemsCount / amountOfElementsToShow
 
   const dispatch = useAppDispatch()

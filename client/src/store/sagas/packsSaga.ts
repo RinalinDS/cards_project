@@ -10,8 +10,8 @@ import { getPacksS } from 'store/sagas/cardsSaga'
 function* addPacksWorker({ payload }: AddPackST) {
   try {
     yield call(cardsApi.addPack, payload)
-    const { cards }: RootState = yield select()
-    yield put(getPacksS({ max: cards.rangeValues.maxCardsCount }))
+    const { packs }: RootState = yield select()
+    yield put(getPacksS({ max: packs.rangeValues.maxCardsCount }))
   } catch (e) {
     yield put(setError((e as AxiosError)?.response?.data))
   }
@@ -20,8 +20,8 @@ function* addPacksWorker({ payload }: AddPackST) {
 function* editPackWorker({ payload }: AddPackST) {
   try {
     yield call(cardsApi.updatePack, payload)
-    const { cards }: RootState = yield select()
-    yield put(getPacksS({ max: cards.rangeValues.maxCardsCount }))
+    const { packs }: RootState = yield select()
+    yield put(getPacksS({ max: packs.rangeValues.maxCardsCount }))
   } catch (e) {
     yield put(setError((e as AxiosError)?.response?.data))
   }
@@ -30,8 +30,8 @@ function* editPackWorker({ payload }: AddPackST) {
 function* deletePackWorker({ payload }: DelPackST) {
   try {
     yield call(cardsApi.deletePack, payload)
-    const { cards }: RootState = yield select()
-    yield put(getPacksS({ max: cards.rangeValues.maxCardsCount }))
+    const { packs }: RootState = yield select()
+    yield put(getPacksS({ max: packs.rangeValues.maxCardsCount }))
   } catch (e) {
     yield put(setError((e as AxiosError)?.response?.data))
   }
