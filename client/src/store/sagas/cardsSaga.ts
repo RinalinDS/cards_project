@@ -1,105 +1,123 @@
-import { AxiosError, AxiosResponse } from 'axios'
-import { SagaIterator } from 'redux-saga'
-import { call, put, select, StrictEffect, takeLatest } from 'redux-saga/effects'
+import {AxiosError, AxiosResponse} from 'axios'
+import {SagaIterator} from 'redux-saga'
+import {call, put, select, StrictEffect, takeLatest} from 'redux-saga/effects'
 
-import { RootState } from '../config'
-import { setCardUpdatedGrade } from '../reducers/cardsReducer'
-import { cardsApi } from 'api/cardsApi'
-import { SagaActions } from 'enums/sagaActions'
-import { setOnePackCards, setPacks } from 'store/reducers'
-import { setError } from 'store/reducers/appReducer'
-import { PackT } from 'types'
-import { CardsPackT, GetPacksPayload, GetPacksResponseT, GetPacksWorkerT } from 'types/PacksType'
-import { UpdatedGradeRequestT, UpdatedGradeT, CardTypePartial } from 'types/PackTypes'
+import {RootState} from '../config'
+import {setCardUpdatedGrade} from '../reducers/cardsReducer'
+import {cardsApi} from 'api/cardsApi'
+import {SagaActions} from 'enums/sagaActions'
+import {setOnePackCards, setPacks} from 'store/reducers'
+import {setAppStatus, setError} from 'store/reducers/appReducer'
+import {CardT, PackT} from 'types'
+import {GetPacksPayload, GetPacksResponseT, GetPacksWorkerT} from 'types/PacksType'
+import {CardTypePartial, UpdatedGradeRequestT, UpdatedGradeT} from 'types/PackTypes'
 
-function* packsWorker({ payload }: GetPacksWorkerT): Generator<StrictEffect, void, AxiosResponse<GetPacksResponseT>> {
+function* packsWorker({payload}: GetPacksWorkerT): Generator<StrictEffect, void, AxiosResponse<GetPacksResponseT>> {
   try {
+    yield put(setAppStatus('loading'))
     const response = yield call(cardsApi.getPacks, payload)
     yield put(setPacks(response.data))
   } catch (e) {
     yield put(setError((e as AxiosError)?.response?.data.error))
+  } finally {
+    yield put(setAppStatus('idle'))
   }
 }
-type CardsT = any
 
-function* onePackCardsWorker({ payload }: any): Generator<StrictEffect, void, CardsT> {
+
+function* onePackCardsWorker({payload}: any): Generator<StrictEffect, void, AxiosResponse<PackT>> {
   try {
+    yield put(setAppStatus('loading'))
     const response: AxiosResponse<PackT> = yield call(cardsApi.getOnePackCards, payload)
     yield put(setOnePackCards(response.data))
   } catch (e) {
-    console.log(e)
     yield put(setError((e as AxiosError)?.response?.data))
+  } finally {
+    yield put(setAppStatus('idle'))
   }
 }
 
 export const getOnePackS = (payload: CardTypePartial) =>
-  ({ type: SagaActions.GetOnePack, payload } as const)
+  ({type: SagaActions.GetOnePack, payload} as const)
 
 export const deleteOneCard = (payload: string) =>
-  ({ type: SagaActions.DeleteCard, payload } as const)
+  ({type: SagaActions.DeleteCard, payload} as const)
 
 const getCurrentPackId = (state: RootState) => state.cards.currentPackId
 const getCardsTotalCount = (state: RootState) => state.cards.currentPack.cardsTotalCount
 
-function* deleteOneCardFromPackWorker({ payload }: any): Generator<StrictEffect, void, CardsT> {
+function* deleteOneCardFromPackWorker({payload}: any): Generator<StrictEffect, void, AxiosResponse<CardT>> {
   try {
-    console.log(payload)
+    yield put(setAppStatus('loading'))
     yield call(cardsApi.deleteCardFromCurrentPack, payload)
-
     // eslint-disable-next-line camelcase
     const cardsPack_id = yield select(getCurrentPackId)
     const max = yield select(getCardsTotalCount)
     // eslint-disable-next-line camelcase
-    yield put({ type: SagaActions.GetOnePack, payload: { cardsPack_id, max } })
+    yield put({type: SagaActions.GetOnePack, payload: {cardsPack_id, max}})
   } catch (e) {
     yield put(setError((e as AxiosError)?.response?.data))
+  } finally {
+    yield put(setAppStatus('idle'))
   }
 }
 
-function* updateOneCardFromPackWorker({ payload }: any): Generator<StrictEffect, void, CardsT> {
+function* updateOneCardFromPackWorker({payload}: any): Generator<StrictEffect, void, AxiosResponse<CardT>> {
   try {
-    console.log(payload)
+    yield put(setAppStatus('loading'))
     yield call(cardsApi.updateCardInCurrentPack, payload)
     // eslint-disable-next-line camelcase
     const cardsPack_id = yield select(getCurrentPackId)
     const max = yield select(getCardsTotalCount)
     // eslint-disable-next-line camelcase
-    yield put({ type: SagaActions.GetOnePack, payload: { cardsPack_id, max } })
+    yield put({type: SagaActions.GetOnePack, payload: {cardsPack_id, max}})
   } catch (e) {
     yield put(setError((e as AxiosError)?.response?.data))
+  } finally {
+    yield put(setAppStatus('idle'))
   }
 }
-export const updateOneCard = (payload: CardTypePartial) =>
-  ({ type: SagaActions.UpdateCard, payload } as const)
 
-function* createNewCardInPackWorker({ payload }: any): Generator<StrictEffect, void, CardsT> {
+export const updateOneCard = (payload: CardTypePartial) =>
+  ({type: SagaActions.UpdateCard, payload} as const)
+
+function* createNewCardInPackWorker({payload}: any): Generator<StrictEffect, void, AxiosResponse<CardT>> {
   try {
+    yield put(setAppStatus('loading'))
     yield call(cardsApi.createCardInCurrentPack, payload)
     // eslint-disable-next-line camelcase
     const cardsPack_id = yield select(getCurrentPackId)
     const max = yield select(getCardsTotalCount)
     // eslint-disable-next-line camelcase
-    yield put({ type: SagaActions.GetOnePack, payload: { cardsPack_id, max } })
+    yield put({type: SagaActions.GetOnePack, payload: {cardsPack_id, max}})
   } catch (e) {
     yield put(setError((e as AxiosError)?.response?.data.error))
+  } finally {
+    yield put(setAppStatus('idle'))
   }
 }
+
 export const createNewCard = (payload: CardTypePartial) =>
-  ({ type: SagaActions.CreateCard, payload } as const)
+  ({type: SagaActions.CreateCard, payload} as const)
 
-function* rateCardWorker({ payload }: any): Generator<StrictEffect, void, CardsT> {
+function* rateCardWorker({payload}: any): Generator<StrictEffect, void, UpdatedGradeT> {
   try {
+    yield put(setAppStatus('loading'))
     const response: UpdatedGradeT = yield call(cardsApi.rateCard, payload)
-
-    // @ts-ignore
-    yield put(setCardUpdatedGrade(response.updatedGrade))
+    yield put(setCardUpdatedGrade(response))
   } catch (e) {
     yield put(setError((e as AxiosError)?.response?.data))
+  } finally {
+    yield put(setAppStatus('idle'))
   }
 }
 
 export const rateCard = (payload: UpdatedGradeRequestT) =>
-  ({ type: SagaActions.RateCard, payload } as const)
+  ({type: SagaActions.RateCard, payload} as const)
+
+
+export const getPacksS = (payload: Partial<GetPacksPayload>) =>
+  ({type: SagaActions.GetPacks, payload} as const)
 
 export function* cardsWatcher(): SagaIterator {
   yield takeLatest(SagaActions.GetPacks, packsWorker)
@@ -110,7 +128,3 @@ export function* cardsWatcher(): SagaIterator {
   yield takeLatest(SagaActions.RateCard, rateCardWorker)
 }
 
-export const getPacksS = (payload: Partial<GetPacksPayload>) =>
-  ({ type: SagaActions.GetPacks, payload } as const)
-
-// export const getOnePackS = (payload: any) => ({ type: SagaActions.GetOnePack, payload } as const)

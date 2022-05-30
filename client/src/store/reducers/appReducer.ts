@@ -9,10 +9,12 @@ import { userApi } from 'api'
 import { setIsLoggedInAC } from 'store/reducers/authReducer'
 import { GenericReturnType, UserType } from 'types'
 
+type StatusType = 'idle' | 'loading' | 'success'
 const initialState = {
   isInitialized: false,
   error: '',
   isEditMode: false,
+  status: 'idle' as StatusType,
 }
 
 const slice = createSlice({
@@ -28,26 +30,29 @@ const slice = createSlice({
     setEditMode: (state, action: PayloadAction<boolean>) => {
       state.isEditMode = action.payload
     },
+    setAppStatus: (state, action: PayloadAction<StatusType>) => {
+      state.status = action.payload
+    },
   },
 })
 
 export const appReducer = slice.reducer
 
-export const { setInitializeAC, setError, setEditMode } = slice.actions
+export const { setInitializeAC, setError, setEditMode, setAppStatus } = slice.actions
 
 export const requestInitialize = () => ({ type: 'REQUEST_INITIALIZE' } as const)
 
 export function* setInitializeWorker(): SagaIterator {
   try {
-    // eslint-disable-next-line no-debugger
+    yield put(setAppStatus('loading'))
     const response: AxiosResponse<UserType> = yield call(userApi.me)
     yield put(setUserInfo(response.data))
     yield put(setIsLoggedInAC(true))
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.warn(e as AxiosError)
   } finally {
     yield put(setInitializeAC(true))
+    yield put(setAppStatus('idle'))
   }
 }
 
