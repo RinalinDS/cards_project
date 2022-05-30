@@ -1,39 +1,50 @@
 import { AxiosError } from 'axios'
 import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects'
 
+import { AppStatus } from '../../enums'
+
 import { AddPackT, cardsApi } from 'api/cardsApi'
 import { SagaActions } from 'enums/sagaActions'
 import { RootState } from 'store/config'
-import { setError } from 'store/reducers/appReducer'
+import { setAppStatus, setError } from 'store/reducers/appReducer'
 import { getPacksS } from 'store/sagas/cardsSaga'
 
 function* addPacksWorker({ payload }: AddPackST) {
   try {
+    yield put(setAppStatus(AppStatus.loading))
     yield call(cardsApi.addPack, payload)
     const { packs }: RootState = yield select()
     yield put(getPacksS({ max: packs.rangeValues.maxCardsCount }))
   } catch (e) {
     yield put(setError((e as AxiosError)?.response?.data))
+  } finally {
+    yield put(setAppStatus(AppStatus.idle))
   }
 }
 
 function* editPackWorker({ payload }: AddPackST) {
   try {
+    yield put(setAppStatus(AppStatus.loading))
     yield call(cardsApi.updatePack, payload)
     const { packs }: RootState = yield select()
     yield put(getPacksS({ max: packs.rangeValues.maxCardsCount }))
   } catch (e) {
     yield put(setError((e as AxiosError)?.response?.data))
+  } finally {
+    yield put(setAppStatus(AppStatus.idle))
   }
 }
 
 function* deletePackWorker({ payload }: DelPackST) {
   try {
+    yield put(setAppStatus(AppStatus.loading))
     yield call(cardsApi.deletePack, payload)
     const { packs }: RootState = yield select()
     yield put(getPacksS({ max: packs.rangeValues.maxCardsCount }))
   } catch (e) {
     yield put(setError((e as AxiosError)?.response?.data))
+  } finally {
+    yield put(setAppStatus(AppStatus.idle))
   }
 }
 
