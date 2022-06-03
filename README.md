@@ -1,6 +1,6 @@
 # Hi Guys
 
-[Now you are in repo created by me.](https://github.com/THEiDiet)
+[Now you are in repo created by me.](https://github.com/https://github.com/RinalinDS)
 
 ### Current stack:
 
